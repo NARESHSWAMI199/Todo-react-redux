@@ -16,7 +16,7 @@ export default App;
 ```
 
 ## Todo.js    
-* The main view of projec
+* The main view of project
 
 
 ```
