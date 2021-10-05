@@ -1,4 +1,4 @@
-##App.js
+## App.js
 
 
 ```
@@ -15,7 +15,7 @@ export default App;
 
 ```
 
-##Todo.js    
+## Todo.js    
 * The main view of projec
 
 
@@ -70,7 +70,7 @@ export default Todo;
 
 ```
 
-##reducer/redcer.js
+## reducer/redcer.js
 * logic here
 
 ```
@@ -118,7 +118,7 @@ const todoReducer = (state=initialState, action) =>{
 export default todoReducer;
 ```
 
-##reducer/index.js
+## reducer/index.js
 
 
 ```
@@ -135,7 +135,7 @@ const rootReducer =  combineReducers(
 export default rootReducer;
 ```
 
-##store.js
+## store.js
 
 ```
 
@@ -153,7 +153,7 @@ export default store;
 ```
 
 
-##index.js
+## index.js
 
 
 
