@@ -1,3 +1,7 @@
+
+! Just core functionality of redux
+
+
 ## App.js
 
 
