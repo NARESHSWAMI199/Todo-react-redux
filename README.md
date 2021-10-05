@@ -1,70 +1,186 @@
-# Getting Started with Create React App
+##App.js
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+```
+import React from 'react';
+import Todo from './components/Todo';
 
-In the project directory, you can run:
+function App() {
+  return (
+    <Todo/>
+  );
+}
 
-### `npm start`
+export default App;
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+##Todo.js    
+* The main view of projec
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+import React, { useState } from "react";
+import { useSelector,useDispatch } from "react-redux";
+import {AddTodo,RemoveTodo,DeleteTodo} from "../actions/index"
 
-### `npm run build`
+function Todo() {
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    
+    const [inputData, setInputData] = useState('')
+    const list = useSelector((state)=> state.todoReducer.list );
+    const dispatch = useDispatch();
+    return (
+        <>
+            <div className="container mt-5">
+                <div className="col-6 offset-3 shadow-sm mt-5 p-5 text-center">
+                    <figure>
+                        <figcaption className='mt-5'>
+                            Add your list here ✌
+                        </figcaption>
+                    </figure>
+                    <div className="addItems">
+                        <input className="form-control" type="text" 
+                         placeholder="✍ Add items" 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+                         value={inputData}
+                            onChange={(event) => setInputData(event.target.value) }
+                         />
+                        <button type="button" className="btn btn-secondary mt-2 w-100" onClick={()=> dispatch(AddTodo(inputData) , setInputData(''))} > Add </button>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+                        <div className="mt-5 p-3 shadow-sm  rounded">
+                            { list.map((elem) =>{
+                                return  <p className="border border-1" key={elem.key}> {elem.data} <i className="fa d-flex justify-content-end mx-2 my-2 fa-trash" onClick={()=>dispatch(DeleteTodo(elem.id))}> </i> </p> 
+                            })}
 
-### `npm run eject`
+                        { list.length !==0 &&    
+                        <button type="button" className="btn btn-secondary mt-2 w-100" onClick={()=> dispatch(RemoveTodo())} >Remove All</button>
+                        }
+                        </div>
+                     
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+export default Todo;
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+##reducer/redcer.js
+* logic here
 
-## Learn More
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const initialState = {
+    list : []
+}
 
-### Code Splitting
+const todoReducer = (state=initialState, action) =>{
+    switch (action.type) {
+        case "ADD_TODO":
+            const {id ,data} = action.payload;
+            return {
+                ...state , 
+                list : [
+                    ...state.list,
+                    {
+                        id : id,
+                        data : data
+                    }
+                ]
+            }
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+            case "REMOVE_TODO":
+                return {
+                    list : []
+                }
 
-### Analyzing the Bundle Size
+            case "DELETE_TODO":
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+                const newList = state.list.filter( (elem) => elem.id !== action.id )
+                return {
+                    ...state , 
+                    list : newList
+                    
+                }
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+            default :return state;
+    }
+}
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+export default todoReducer;
+```
 
-### Deployment
+##reducer/index.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+import todoReducer from "./reducer";
+import { combineReducers } from "redux";
+
+
+const rootReducer =  combineReducers(
+    {
+        todoReducer
+    }
+)
+export default rootReducer;
+```
+
+##store.js
+
+```
+
+
+
+import { createStore } from "redux";
+import rootReducer from "./reducer";
+
+
+const store = createStore(rootReducer,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
+
+export default store;
+
+```
+
+
+##index.js
+
+
+
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import {Provider} from "react-redux";
+import store from './store'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+    <App />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+
+```
+
+
